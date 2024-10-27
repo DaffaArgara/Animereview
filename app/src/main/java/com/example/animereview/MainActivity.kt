@@ -23,37 +23,44 @@ import com.example.animereview.ui.theme.Anime
 import com.example.animereview.ui.theme.animeList
 import com.example.animereview.ui.theme.Purple40 // Import warna yang diinginkan
 
+// MainActivity adalah kelas utama yang dijalankan saat aplikasi dimulai
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AnimeReviewApp(animes = animeList) // Menampilkan daftar anime
+            // Memanggil fungsi AnimeReviewApp untuk menampilkan daftar anime
+            AnimeReviewApp(animes = animeList)
         }
     }
 }
 
+// Composable function utama untuk aplikasi review anime
 @Composable
 fun AnimeReviewApp(animes: List<Anime>) {
+    // State untuk menyimpan daftar ulasan per anime
     var reviews by remember { mutableStateOf(mutableMapOf<Anime, List<String>>()) }
+    // State untuk menyimpan teks ulasan yang sedang ditulis
     var reviewText by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedAnime by remember { mutableStateOf<Anime?>(null) } // Untuk menyimpan anime yang dipilih
+    // State untuk menyimpan anime yang dipilih
+    var selectedAnime by remember { mutableStateOf<Anime?>(null) }
 
+    // Scaffold untuk struktur UI aplikasi dengan top bar
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(id = R.string.top_app_bar_title)) })
         }
     ) { paddingValues ->
-        // Column dengan pengguliran
+        // Column yang dapat digulir untuk menampilkan daftar anime
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Purple40) // Menambahkan warna latar belakang
-                .verticalScroll(rememberScrollState()), // Membuat Column dapat digulir
+                .background(Purple40) // Warna latar belakang Purple40
+                .verticalScroll(rememberScrollState()), // Column dapat digulir
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Menampilkan gambar anime dalam grid manual
-            for (i in animeList.indices step 3) {
+            for (i in animeList.indices step 3) { // Mengelompokkan per 3 anime dalam satu baris
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -64,20 +71,22 @@ fun AnimeReviewApp(animes: List<Anime>) {
                             Card(
                                 modifier = Modifier
                                     .padding(8.dp)
-                                    .weight(1f), // Membuat kolom memiliki ukuran yang sama
+                                    .weight(1f), // Mengatur ukuran kolom sama rata
                                 shape = RoundedCornerShape(8.dp),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.White) // Ganti dengan warna yang diinginkan
+                                colors = CardDefaults.cardColors(containerColor = Color.White) // Warna latar kartu
                             ) {
+                                // Kolom untuk konten dalam kartu
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier.padding(8.dp) // Padding di dalam Card
+                                    modifier = Modifier.padding(8.dp)
                                 ) {
+                                    // Menampilkan gambar anime yang dapat diklik untuk memilih anime
                                     Image(
                                         painter = painterResource(id = anime.imageResId),
                                         contentDescription = anime.title,
                                         modifier = Modifier
-                                            .size(150.dp) // Ukuran gambar
+                                            .size(150.dp)
                                             .clickable {
                                                 selectedAnime = anime // Menyimpan anime yang dipilih
                                             }
@@ -85,7 +94,7 @@ fun AnimeReviewApp(animes: List<Anime>) {
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
-                                    // Kolom untuk detail anime
+                                    // Menampilkan informasi detail anime
                                     Text(
                                         text = stringResource(id = R.string.anime_title) + ": ${anime.title}",
                                         modifier = Modifier.padding(4.dp)
@@ -107,8 +116,9 @@ fun AnimeReviewApp(animes: List<Anime>) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Input untuk ulasan
+            // Bagian input untuk menambahkan ulasan
             selectedAnime?.let { anime ->
+                // TextField untuk menuliskan ulasan
                 TextField(
                     value = reviewText,
                     onValueChange = { reviewText = it },
@@ -118,31 +128,30 @@ fun AnimeReviewApp(animes: List<Anime>) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Tombol untuk menyimpan ulasan
                 Button(onClick = {
                     if (reviewText.text.isNotEmpty()) {
-                        // Tambahkan ulasan ke anime yang dipilih
+                        // Menambahkan ulasan baru ke daftar ulasan anime yang dipilih
                         val updatedReviews = reviews[anime]?.toMutableList() ?: mutableListOf()
-                        // Format ulasan sesuai keinginan
-                        updatedReviews.add("Ulasan: ${reviewText.text}")
-                        reviews[anime] = updatedReviews // Simpan kembali ulasan
+                        updatedReviews.add("Ulasan: ${reviewText.text}") // Format ulasan
+                        reviews[anime] = updatedReviews // Menyimpan daftar ulasan
 
                         reviewText = TextFieldValue("") // Reset TextField
                     }
                 }) {
-                    Text(stringResource(id = R.string.submit_review),
-                        color = Color.White ) // Mengubah warna teks menjadi putih
+                    Text(stringResource(id = R.string.submit_review), color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Menampilkan prologue yang dipilih jika ada
+                // Menampilkan prologue dari anime yang dipilih
                 Text(
                     text = stringResource(id = R.string.anime_prologue) + ": ${anime.prologue}",
                     modifier = Modifier.padding(8.dp),
-                    style = MaterialTheme.typography.bodyMedium // Anda dapat menyesuaikan gaya ini
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
-                Spacer(modifier = Modifier.height(16.dp)) // Menambahkan jarak antara prologue dan daftar ulasan
+                Spacer(modifier = Modifier.height(16.dp)) // Jarak antara prologue dan daftar ulasan
 
                 // Menampilkan daftar ulasan untuk anime yang dipilih
                 reviews[anime]?.forEach { review ->
