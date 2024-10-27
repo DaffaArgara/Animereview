@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Aplikasi Ulasan Anime</string>
+    <string name="top_app_bar_title">Ulasan Anime</string>
+    <string name="anime_title">Judul Anime</string>
+    <string name="anime_genre">Genre</string>
+    <string name="anime_rating">Rating</string>
+    <string name="review_placeholder">Tulis ulasan</string>
+    <string name="submit_review">Kirim Ulasan</string>
+    <string name="anime_prologue">Prologue</string> <!-- Tambahkan string prologue -->
+</resources>
